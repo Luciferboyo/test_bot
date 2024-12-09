@@ -14,10 +14,10 @@ import java.util.Map;
 @Component
 public class TelegramSender {
 
-    @Value("${telegram.bot.chinese.username}")
+    @Value("${telegram.bot.username}")
     private String username;
 
-    @Value("${telegram.bot.chinese.token}")
+    @Value("${telegram.bot.token}")
     private String token;
 
     @Autowired
@@ -31,7 +31,6 @@ public class TelegramSender {
             telegramBotsApi.registerBot(tgSearcherBot);
             //这里可以添加回复按钮
             //tgSearcherBot.openHot();
-            tgSearcherBot.setMenu();
         }catch (TelegramApiException e){
             throw new RuntimeException(e);
         }
