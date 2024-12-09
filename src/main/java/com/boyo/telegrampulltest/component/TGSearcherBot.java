@@ -1,5 +1,7 @@
 package com.boyo.telegrampulltest.component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -16,6 +18,7 @@ import java.util.*;
 @Component
 public class TGSearcherBot extends TelegramLongPollingBot {
 
+    private static final Logger log = LoggerFactory.getLogger(TGSearcherBot.class);
     private final String username;
 
     private final String token;
@@ -52,13 +55,13 @@ public class TGSearcherBot extends TelegramLongPollingBot {
         if (user != null){
 
             StringBuilder username = new StringBuilder();
-            username.append("用户 ");
+            username.append("User ");
             username.append(user.getFirstName());
 
             if (user.getLastName() != null){
                 username.append(user.getLastName());
             }
-            username.append(" 已经离开！");
+            username.append("already left!");
 
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
@@ -78,10 +81,10 @@ public class TGSearcherBot extends TelegramLongPollingBot {
         String chatId = String.valueOf(update.getMessage().getChatId());
 
         if (update.getMessage().hasText()){
-            sendMessage(chatId,"hello");
             return;
         }
 
+        //欢迎弹窗
         if (update.getMessage().getNewChatMembers() != null){
             update.getMessage().getNewChatMembers().forEach(member -> {
                 String welcomeMessage = "欢迎加入群组！请使用"+"https://www.google.co.uk/";
@@ -91,6 +94,8 @@ public class TGSearcherBot extends TelegramLongPollingBot {
             handleMyChatMeber(update,chatId,userId);
         }
     }
+
+
 
         /**
          * 处理按钮按了之后的方法
@@ -122,6 +127,25 @@ public class TGSearcherBot extends TelegramLongPollingBot {
         markup.setKeyboard(keyboard);
         markup.setResizeKeyboard(true);
         sendMessage(chatId,sendText,markup);
+    }
+
+    /**
+     * 机器人发送文本消息的方法(api)
+     * @param sendText
+     */
+    public synchronized boolean sendMessage(String sendText){
+
+        String chatId = "";
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(sendText);
+        try {
+            sendE(sendMessage);
+            return true;
+        }catch (TelegramApiException e){
+            log.info("异常:\n"+e);
+            return false;
+        }
     }
 
     /**
@@ -176,5 +200,13 @@ public class TGSearcherBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 捕捉异常的封装
+     * @param smg
+     */
+    public void sendE(SendMessage smg)throws TelegramApiException{
+        execute(smg);
     }
 }
