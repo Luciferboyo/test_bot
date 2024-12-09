@@ -31,31 +31,6 @@ public class TGSearcherBot extends TelegramLongPollingBot {
 
     private final String token;
 
-    public static ButtonTextUrlMap buttonTextUrlMap = new ButtonTextUrlMap();
-
-    private Map<String,Integer> currenPageMap = new HashMap<>();
-
-    private static final int PAGE_SIZE = 3;
-
-    //用计数的方式，判断“返回”按钮
-    private static int count = 0;
-
-    private Map<String,Stack<MenuState>> menuHistoryMap = new HashMap<>();
-
-    static{
-        buttonTextUrlMap.put("https://www.google.com.sg/","谷歌");
-        buttonTextUrlMap.put("https://www.baidu.com/","百度");
-        buttonTextUrlMap.put("https://www.microsoft.com/zh-cn","微软");
-        buttonTextUrlMap.put("https://t.me/TGSearchsG","TG-Searchs-G");
-        buttonTextUrlMap.put("https://t.me/TGSearchsC","TG-Searchs-C");
-        buttonTextUrlMap.put("https://world.taobao.com/","淘宝");
-        buttonTextUrlMap.put("https://leetcode.cn/","力扣");
-        List<String> pageList = new ArrayList<>();
-        for (Map.Entry<String,String> entry: buttonTextUrlMap.entrySet()){
-            pageList.add(entry.getKey());
-        }
-    }
-
     public TGSearcherBot(String username,String token){
         super(new DefaultBotOptions(),token);
         this.username = username;
@@ -527,28 +502,6 @@ public class TGSearcherBot extends TelegramLongPollingBot {
     }
 
     /**
-     * 发送视频
-     * @param chatId
-     * @param videoIntroduction
-     * @param videoPath
-     */
-    private void sendVideo(String chatId,String videoIntroduction,String videoPath){
-
-        SendVideo sendVideo = new SendVideo();
-        sendVideo.setChatId(chatId);
-        InputFile videoFile = new InputFile(new File(videoPath));
-        sendVideo.setVideo(videoFile);
-        sendVideo.setCaption(videoIntroduction);
-
-        try {
-            execute(sendVideo);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    /**
      * 设置机器人的menu
      */
     public void setMenu(){
@@ -652,43 +605,5 @@ public class TGSearcherBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * 获取逗号前面的字符串
-     * @param input
-     * @return
-     */
-    public String getStringBeforeComma(String input){
-
-        if (input == null){
-            return null;
-        }
-
-        int commaIndex = input.indexOf(",");
-
-        if (commaIndex == -1){
-            return "";
-        }
-        return input.substring(0,commaIndex).trim();
-    }
-
-    /**
-     * 获取逗号后面的字符串
-     * @param input
-     * @return
-     */
-    public String getStringAfterComma(String input){
-
-        if (input == null){
-            return null;
-        }
-
-        int commaIndex = input.indexOf(",");
-
-        if (commaIndex == -1){
-            return "";
-        }
-        return input.substring(commaIndex+1).trim();
     }
 }

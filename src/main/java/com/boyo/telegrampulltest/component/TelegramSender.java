@@ -15,16 +15,10 @@ import java.util.Map;
 public class TelegramSender {
 
     @Value("${telegram.bot.chinese.username}")
-    String username;
+    private String username;
 
     @Value("${telegram.bot.chinese.token}")
-    String token;
-
-    @Value("${telegram.bot.chinese.username1}")
-    String username1;
-
-    @Value("${telegram.bot.chinese.token1}")
-    String token1;
+    private String token;
 
     @Autowired
     private TGSearcherBot tgSearcherBot;
@@ -32,17 +26,12 @@ public class TelegramSender {
     @PostConstruct
     public void init(){
         try {
-            Map<String,String> uAndT = new HashMap<>();
-            uAndT.put(username,token);
-            uAndT.put(username1,token1);
-            for (Map.Entry<String,String> entry : uAndT.entrySet()){
-                tgSearcherBot = new TGSearcherBot(entry.getKey(),entry.getValue());
-                TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-                telegramBotsApi.registerBot(tgSearcherBot);
-                //这里可以添加回复按钮
-                //tgSearcherBot.openHot();
-                tgSearcherBot.setMenu();
-            }
+            tgSearcherBot = new TGSearcherBot(username,token);
+            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(tgSearcherBot);
+            //这里可以添加回复按钮
+            //tgSearcherBot.openHot();
+            tgSearcherBot.setMenu();
         }catch (TelegramApiException e){
             throw new RuntimeException(e);
         }
